@@ -1,0 +1,53 @@
+# Java
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+*.war
+*.ear
+*.nar
+*.log
+
+# Maven
+.mvn/
+mvn
+mvnw
+mvnw.cmd
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*~
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+*.env.local
+*.env.production
+*.env.development
+
+# Test Coverage
+coverage/
+*.coverage
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+build/
+dist/
+out/

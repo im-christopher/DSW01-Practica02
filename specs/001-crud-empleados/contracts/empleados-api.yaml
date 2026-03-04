@@ -1,0 +1,275 @@
+openapi: 3.0.3
+info:
+  title: API CRUD Empleados
+  version: 1.0.0
+  description: Contrato API para gestión de empleados con CRUD, listado paginado, filtros y sort.
+servers:
+  - url: http://localhost:8080
+security:
+  - basicAuth: []
+paths:
+  /api/empleados:
+    post:
+      summary: Crear empleado
+      operationId: createEmpleado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoCreateRequest'
+      responses:
+        '201':
+          description: Empleado creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoResponse'
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Capacidad agotada (se alcanzó E-999)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Listar empleados
+      operationId: listEmpleados
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: nombre
+          schema:
+            type: string
+        - in: query
+          name: clave
+          schema:
+            type: string
+            pattern: '^E-\\d{3}$'
+        - in: query
+          name: sort
+          description: Orden por clave. Valores permitidos: asc, desc
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Página de empleados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoPageResponse'
+        '400':
+          description: Parámetros inválidos de paginación/filtros/sort
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/empleados/{clave}:
+    get:
+      summary: Consultar empleado por clave
+      operationId: getEmpleadoByClave
+      parameters:
+        - in: path
+          name: clave
+          required: true
+          schema:
+            type: string
+            pattern: '^E-\\d{3}$'
+      responses:
+        '200':
+          description: Empleado encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoResponse'
+        '400':
+          description: Clave inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Empleado no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Actualizar empleado por clave
+      operationId: updateEmpleadoByClave
+      parameters:
+        - in: path
+          name: clave
+          required: true
+          schema:
+            type: string
+            pattern: '^E-\\d{3}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoUpdateRequest'
+      responses:
+        '200':
+          description: Empleado actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoResponse'
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Empleado no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflicto de concurrencia optimista
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Eliminar empleado por clave (baja física)
+      operationId: deleteEmpleadoByClave
+      parameters:
+        - in: path
+          name: clave
+          required: true
+          schema:
+            type: string
+            pattern: '^E-\\d{3}$'
+      responses:
+        '204':
+          description: Empleado eliminado
+        '400':
+          description: Clave inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Empleado no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    EmpleadoCreateRequest:
+      type: object
+      required: [nombre, direccion, telefono]
+      additionalProperties: false
+      properties:
+        nombre:
+          type: string
+          maxLength: 100
+        direccion:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+          minLength: 10
+          maxLength: 100
+    EmpleadoUpdateRequest:
+      type: object
+      required: [nombre, direccion, telefono, version]
+      additionalProperties: false
+      properties:
+        nombre:
+          type: string
+          maxLength: 100
+        direccion:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+          minLength: 10
+          maxLength: 100
+        version:
+          type: integer
+          format: int64
+          minimum: 0
+    EmpleadoResponse:
+      type: object
+      required: [clave, nombre, direccion, telefono, version]
+      properties:
+        clave:
+          type: string
+          pattern: '^E-\\d{3}$'
+        nombre:
+          type: string
+          maxLength: 100
+        direccion:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+          minLength: 10
+          maxLength: 100
+        version:
+          type: integer
+          format: int64
+    EmpleadoPageResponse:
+      type: object
+      required: [content, number, size, totalElements, totalPages, first, last]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmpleadoResponse'
+        number:
+          type: integer
+          minimum: 0
+        size:
+          type: integer
+          minimum: 1
+          maximum: 100
+        totalElements:
+          type: integer
+          format: int64
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        first:
+          type: boolean
+        last:
+          type: boolean
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
