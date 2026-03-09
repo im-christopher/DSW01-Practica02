@@ -25,6 +25,7 @@
 **Project Type**: Backend web-service  
 **Performance Goals**: [feature-specific measurable goals]  
 **Constraints**: Basic Auth required; Swagger contract required; secrets via environment variables  
+**API Versioning**: Public endpoints MUST be path-versioned using `/api/v{major}/...`  
 **Scale/Scope**: [feature-specific scope]
 
 ## Constitution Check
@@ -37,6 +38,7 @@
 - [ ] PostgreSQL persistence strategy and migrations defined
 - [ ] Docker execution/build strategy documented
 - [ ] Swagger/OpenAPI documentation impact defined
+- [ ] API path versioning strategy defined (`/api/v{major}/...`)
 
 ## Project Structure
 

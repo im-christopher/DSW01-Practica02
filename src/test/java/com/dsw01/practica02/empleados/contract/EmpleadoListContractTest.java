@@ -60,7 +60,7 @@ class EmpleadoListContractTest {
         when(empleadoService.listarEmpleados(anyInt(), anyInt(), eq("N"), eq(null), eq("asc")))
             .thenReturn(pageResponse);
 
-        mockMvc.perform(get("/api/empleados")
+        mockMvc.perform(get("/api/v1/empleados")
                 .with(httpBasic("admin", "admin123"))
                 .param("nombre", "N"))
             .andExpect(status().isOk())

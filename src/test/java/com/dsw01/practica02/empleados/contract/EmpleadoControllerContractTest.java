@@ -60,7 +60,7 @@ class EmpleadoControllerContractTest {
             "T".repeat(100)
         );
 
-        mockMvc.perform(post("/api/empleados")
+        mockMvc.perform(post("/api/v1/empleados")
                 .with(httpBasic("admin", "admin123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -81,7 +81,7 @@ class EmpleadoControllerContractTest {
 
         when(empleadoService.obtenerPorClave(eq("E-001"))).thenReturn(response);
 
-        mockMvc.perform(get("/api/empleados/E-001")
+        mockMvc.perform(get("/api/v1/empleados/E-001")
                 .with(httpBasic("admin", "admin123")))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.clave").value("E-001"));

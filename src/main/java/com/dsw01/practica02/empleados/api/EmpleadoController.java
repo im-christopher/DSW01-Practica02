@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
-@RequestMapping("/api/empleados")
+@RequestMapping("/api/v1/empleados")
 public class EmpleadoController {
 
     private final EmpleadoService empleadoService;

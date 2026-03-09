@@ -8,7 +8,7 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: Include test tasks for authentication, persistence, and API behavior whenever a story changes those areas.
+**Tests**: Include test tasks for authentication, persistence, API behavior, and versioned route behavior whenever a story changes those areas.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -70,6 +70,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T009 Setup environment configuration management
 - [ ] T010 [P] Configure Docker build/runtime baseline
 - [ ] T011 [P] Configure/validate OpenAPI-Swagger generation
+- [ ] T012 [P] Define and validate API major version route prefix (`/api/v{major}/...`)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -85,18 +86,18 @@ Examples of foundational tasks (adjust based on your project):
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T012 [P] [US1] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T013 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T013 [P] [US1] Contract test for versioned [endpoint] in tests/contract/test_[name].py
+- [ ] T014 [P] [US1] Integration test for [user journey] in tests/integration/test_[name].py
 
 ### Implementation for User Story 1
 
-- [ ] T014 [P] [US1] Create [Entity1] model in src/models/[entity1].py
-- [ ] T015 [P] [US1] Create [Entity2] model in src/models/[entity2].py
-- [ ] T016 [US1] Implement [Service] in src/services/[service].py (depends on T014, T015)
-- [ ] T017 [US1] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T018 [US1] Add validation and error handling
-- [ ] T019 [US1] Add logging for user story 1 operations
-- [ ] T020 [US1] Update Swagger/OpenAPI docs for story 1 endpoints
+- [ ] T015 [P] [US1] Create [Entity1] model in src/models/[entity1].py
+- [ ] T016 [P] [US1] Create [Entity2] model in src/models/[entity2].py
+- [ ] T017 [US1] Implement [Service] in src/services/[service].py (depends on T015, T016)
+- [ ] T018 [US1] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T019 [US1] Add validation and error handling
+- [ ] T020 [US1] Add logging for user story 1 operations
+- [ ] T021 [US1] Update Swagger/OpenAPI docs for story 1 endpoints and versioned paths
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -110,16 +111,16 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T021 [P] [US2] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T022 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T022 [P] [US2] Contract test for versioned [endpoint] in tests/contract/test_[name].py
+- [ ] T023 [P] [US2] Integration test for [user journey] in tests/integration/test_[name].py
 
 ### Implementation for User Story 2
 
-- [ ] T023 [P] [US2] Create [Entity] model in src/models/[entity].py
-- [ ] T024 [US2] Implement [Service] in src/services/[service].py
-- [ ] T025 [US2] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T026 [US2] Integrate with User Story 1 components (if needed)
-- [ ] T027 [US2] Update Swagger/OpenAPI docs for story 2 endpoints
+- [ ] T024 [P] [US2] Create [Entity] model in src/models/[entity].py
+- [ ] T025 [US2] Implement [Service] in src/services/[service].py
+- [ ] T026 [US2] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T027 [US2] Integrate with User Story 1 components (if needed)
+- [ ] T028 [US2] Update Swagger/OpenAPI docs for story 2 endpoints and versioned paths
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -133,15 +134,15 @@ Examples of foundational tasks (adjust based on your project):
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T028 [P] [US3] Contract test for [endpoint] in tests/contract/test_[name].py
-- [ ] T029 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
+- [ ] T029 [P] [US3] Contract test for versioned [endpoint] in tests/contract/test_[name].py
+- [ ] T030 [P] [US3] Integration test for [user journey] in tests/integration/test_[name].py
 
 ### Implementation for User Story 3
 
-- [ ] T030 [P] [US3] Create [Entity] model in src/models/[entity].py
-- [ ] T031 [US3] Implement [Service] in src/services/[service].py
-- [ ] T032 [US3] Implement [endpoint/feature] in src/[location]/[file].py
-- [ ] T033 [US3] Update Swagger/OpenAPI docs for story 3 endpoints
+- [ ] T031 [P] [US3] Create [Entity] model in src/models/[entity].py
+- [ ] T032 [US3] Implement [Service] in src/services/[service].py
+- [ ] T033 [US3] Implement [endpoint/feature] in src/[location]/[file].py
+- [ ] T034 [US3] Update Swagger/OpenAPI docs for story 3 endpoints and versioned paths
 
 **Checkpoint**: All user stories should now be independently functional
 

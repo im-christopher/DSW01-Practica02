@@ -9,9 +9,9 @@ Auto-generated from all feature plans. Last updated: 2026-02-25
 ## Project Structure
 
 ```text
-backend/
-frontend/
-tests/
+src/main/java/
+src/main/resources/
+src/test/java/
 ```
 
 ## Commands
@@ -21,6 +21,11 @@ tests/
 ## Code Style
 
 Java 17 (mandatory): Follow standard conventions
+
+## API Versioning
+
+- Public backend endpoints MUST use path versioning (`/api/v{major}/...`).
+- Breaking API changes MUST bump the major path version.
 
 ## Recent Changes
 

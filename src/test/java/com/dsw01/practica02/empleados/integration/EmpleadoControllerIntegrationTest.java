@@ -47,7 +47,7 @@ class EmpleadoControllerIntegrationTest {
             }
             """.formatted("N".repeat(100), "D".repeat(100), "T".repeat(100));
 
-        mockMvc.perform(post("/api/empleados")
+        mockMvc.perform(post("/api/v1/empleados")
                 .with(httpBasic("admin", "admin123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
@@ -58,7 +58,7 @@ class EmpleadoControllerIntegrationTest {
     void shouldReturn404WhenEmpleadoNotFound() throws Exception {
         when(empleadoService.obtenerPorClave(eq("E-999"))).thenThrow(new NotFoundException("Empleado no encontrado"));
 
-        mockMvc.perform(get("/api/empleados/E-999")
+        mockMvc.perform(get("/api/v1/empleados/E-999")
                 .with(httpBasic("admin", "admin123")))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.code").value("NOT_FOUND"));
@@ -66,7 +66,7 @@ class EmpleadoControllerIntegrationTest {
 
     @Test
     void shouldReturn400WhenClavePatternInvalid() throws Exception {
-        mockMvc.perform(get("/api/empleados/ABC123")
+        mockMvc.perform(get("/api/v1/empleados/ABC123")
                 .with(httpBasic("admin", "admin123")))
             .andExpect(status().isBadRequest());
     }

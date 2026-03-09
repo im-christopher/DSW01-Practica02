@@ -38,7 +38,7 @@ class EmpleadoDeleteIntegrationTest {
         doThrow(new NotFoundException("Empleado no encontrado"))
             .when(empleadoService).eliminarEmpleado("E-999");
 
-        mockMvc.perform(delete("/api/empleados/E-999")
+        mockMvc.perform(delete("/api/v1/empleados/E-999")
                 .with(httpBasic("admin", "admin123")))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.code").value("NOT_FOUND"));

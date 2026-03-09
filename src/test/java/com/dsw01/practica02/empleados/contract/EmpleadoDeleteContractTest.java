@@ -35,7 +35,7 @@ class EmpleadoDeleteContractTest {
     void shouldDeleteEmpleadoAndReturn204() throws Exception {
         doNothing().when(empleadoService).eliminarEmpleado("E-001");
 
-        mockMvc.perform(delete("/api/empleados/E-001")
+        mockMvc.perform(delete("/api/v1/empleados/E-001")
                 .with(httpBasic("admin", "admin123")))
             .andExpect(status().isNoContent());
     }

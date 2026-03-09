@@ -55,7 +55,7 @@ class EmpleadoUpdateContractTest {
             }
             """.formatted("N".repeat(100), "D".repeat(100), "T".repeat(100));
 
-        mockMvc.perform(put("/api/empleados/E-001")
+        mockMvc.perform(put("/api/v1/empleados/E-001")
                 .with(httpBasic("admin", "admin123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))

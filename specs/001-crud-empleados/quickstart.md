@@ -18,11 +18,11 @@
    - `mvn clean spring-boot:run`
 
 ## Endpoints esperados
-- `POST /api/empleados`
-- `GET /api/empleados`
-- `GET /api/empleados/{clave}`
-- `PUT /api/empleados/{clave}`
-- `DELETE /api/empleados/{clave}`
+- `POST /api/v1/empleados`
+- `GET /api/v1/empleados`
+- `GET /api/v1/empleados/{clave}`
+- `PUT /api/v1/empleados/{clave}`
+- `DELETE /api/v1/empleados/{clave}`
 
 ## Verificación rápida
 1. Crear empleado enviando solo `nombre`, `direccion`, `telefono` (sin `clave`) y validar `201` con `clave` generada tipo `E-001`.
@@ -30,7 +30,7 @@
 3. Listar con paginación por defecto y validar estructura tipo Spring Page.
 4. Listar con filtros (`nombre` contains, `clave` exact) y validar resultados.
 5. Listar con `sort=desc` y validar orden por `clave`.
-6. Actualizar con `version` vigente y validar éxito; reintentar con versión obsoleta y validar `409`.
+6. Actualizar empleado y validar que `version` de respuesta incrementa automáticamente.
 7. Eliminar empleado y validar que consulta posterior indique `404`.
 
 ## Docker (ejecución local)
@@ -47,7 +47,7 @@
   - `docker rm -f empleados-app pg-dsw && docker network rm dsw-net`
 
 ## Rendimiento básico (local)
-- Medición realizada sobre `GET /api/empleados?page=0&size=20&sort=asc` con autenticación básica.
+- Medición realizada sobre `GET /api/v1/empleados?page=0&size=20&sort=asc` con autenticación básica.
 - Resultado: `p95 = 155.55 ms` (objetivo: `< 300 ms`, cumple).
 
 ## Documentación API

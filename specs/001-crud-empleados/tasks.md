@@ -30,14 +30,14 @@
 **Goal**: Crear empleado y consultar por `clave`.
 
 ### Tests (US1)
-- [x] T011 [P] [US1] Pruebas de contrato para `POST /api/empleados` y `GET /api/empleados/{clave}` en `src/test/java/**/contract/`
+- [x] T011 [P] [US1] Pruebas de contrato para `POST /api/v1/empleados` y `GET /api/v1/empleados/{clave}` en `src/test/java/**/contract/`
 - [x] T012 [P] [US1] Pruebas de integración de alta/consulta en `src/test/java/**/integration/`
 
 ### Implementation (US1)
 - [x] T013 [US1] Crear DTOs request/response de empleado en `src/main/java/**/empleados/api/dto/`
 - [x] T014 [US1] Implementar servicio de alta con generación de `clave` y límite `E-999` en `src/main/java/**/empleados/service/EmpleadoService.java`
-- [x] T015 [US1] Implementar endpoint `POST /api/empleados` en `src/main/java/**/empleados/api/EmpleadoController.java`
-- [x] T016 [US1] Implementar endpoint `GET /api/empleados/{clave}` en `src/main/java/**/empleados/api/EmpleadoController.java`
+- [x] T015 [US1] Implementar endpoint `POST /api/v1/empleados` en `src/main/java/**/empleados/api/EmpleadoController.java`
+- [x] T016 [US1] Implementar endpoint `GET /api/v1/empleados/{clave}` en `src/main/java/**/empleados/api/EmpleadoController.java`
 - [x] T017 [US1] Validar restricciones de longitud exacta 100 y rechazo de `clave` en payload de alta
 
 **Checkpoint**: Alta + consulta funcionales.
@@ -49,12 +49,12 @@
 **Goal**: Actualizar empleado con control de concurrencia optimista por `version`.
 
 ### Tests (US2)
-- [x] T018 [P] [US2] Pruebas de contrato para `PUT /api/empleados/{clave}` en `src/test/java/**/contract/`
+- [x] T018 [P] [US2] Pruebas de contrato para `PUT /api/v1/empleados/{clave}` en `src/test/java/**/contract/`
 - [x] T019 [P] [US2] Pruebas de integración para actualización exitosa, `version` inválida y conflicto `409`
 
 ### Implementation (US2)
 - [x] T020 [US2] Implementar lógica de actualización con validación de `version` en `EmpleadoService`
-- [x] T021 [US2] Implementar endpoint `PUT /api/empleados/{clave}` en `EmpleadoController`
+- [x] T021 [US2] Implementar endpoint `PUT /api/v1/empleados/{clave}` en `EmpleadoController`
 - [x] T022 [US2] Ajustar mapeo de errores para `400`, `404`, `409`
 
 **Checkpoint**: Actualización y concurrencia funcionales.
@@ -66,12 +66,12 @@
 **Goal**: Eliminar empleado físicamente por `clave`.
 
 ### Tests (US3)
-- [x] T023 [P] [US3] Pruebas de contrato para `DELETE /api/empleados/{clave}`
+- [x] T023 [P] [US3] Pruebas de contrato para `DELETE /api/v1/empleados/{clave}`
 - [x] T024 [P] [US3] Pruebas de integración para eliminación y `404` en inexistente
 
 ### Implementation (US3)
 - [x] T025 [US3] Implementar lógica de eliminación física en `EmpleadoService`
-- [x] T026 [US3] Implementar endpoint `DELETE /api/empleados/{clave}` en `EmpleadoController`
+- [x] T026 [US3] Implementar endpoint `DELETE /api/v1/empleados/{clave}` en `EmpleadoController`
 
 **Checkpoint**: Baja física funcional.
 
@@ -82,13 +82,13 @@
 **Goal**: Listar empleados con paginación (`page`,`size`), filtros (`nombre` contains, `clave` exact) y `sort` por `clave` (`asc|desc`).
 
 ### Tests (US4)
-- [x] T027 [P] [US4] Pruebas de contrato para `GET /api/empleados` con parámetros
+- [x] T027 [P] [US4] Pruebas de contrato para `GET /api/v1/empleados` con parámetros
 - [x] T028 [P] [US4] Pruebas de integración para paginación por defecto, `size>100`, filtros y `sort` inválido
 
 ### Implementation (US4)
 - [x] T029 [US4] Implementar consulta paginada/filtrada en `EmpleadoRepository` (Specification/Query methods)
 - [x] T030 [US4] Implementar lógica de listado en `EmpleadoService`
-- [x] T031 [US4] Implementar endpoint `GET /api/empleados` en `EmpleadoController`
+- [x] T031 [US4] Implementar endpoint `GET /api/v1/empleados` en `EmpleadoController`
 - [x] T032 [US4] Implementar respuesta tipo Spring Page (`content`,`number`,`size`,`totalElements`,`totalPages`,`first`,`last`)
 
 **Checkpoint**: Listado funcional con paginación/filtros/sort.

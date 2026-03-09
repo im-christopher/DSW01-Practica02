@@ -99,6 +99,8 @@
   and data integrity behavior).
 - **CA-004**: Feature MUST document Docker runtime/build impact.
 - **CA-005**: Feature MUST document OpenAPI/Swagger changes for all affected endpoints.
+- **CA-006**: Feature MUST expose affected endpoints under versioned paths
+  (`/api/v{major}/...`) and define major-version bump impact for breaking changes.
 
 *Example of marking unclear requirements:*
 

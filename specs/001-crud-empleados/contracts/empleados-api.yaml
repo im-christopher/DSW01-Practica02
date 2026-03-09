@@ -8,7 +8,7 @@ servers:
 security:
   - basicAuth: []
 paths:
-  /api/empleados:
+  /api/v1/empleados:
     post:
       summary: Crear empleado
       operationId: createEmpleado
@@ -83,7 +83,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /api/empleados/{clave}:
+  /api/v1/empleados/{clave}:
     get:
       summary: Consultar empleado por clave
       operationId: getEmpleadoByClave

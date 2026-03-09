@@ -45,7 +45,7 @@ class EmpleadoListIntegrationTest {
         when(empleadoService.listarEmpleados(anyInt(), anyInt(), isNull(), isNull(), anyString()))
             .thenReturn(emptyPage);
 
-        mockMvc.perform(get("/api/empleados")
+        mockMvc.perform(get("/api/v1/empleados")
                 .with(httpBasic("admin", "admin123")))
             .andExpect(status().isOk());
 
@@ -54,7 +54,7 @@ class EmpleadoListIntegrationTest {
 
     @Test
     void shouldReturn400WhenSizeGreaterThan100() throws Exception {
-        mockMvc.perform(get("/api/empleados")
+        mockMvc.perform(get("/api/v1/empleados")
                 .with(httpBasic("admin", "admin123"))
                 .param("size", "101"))
             .andExpect(status().isBadRequest());
@@ -62,7 +62,7 @@ class EmpleadoListIntegrationTest {
 
     @Test
     void shouldReturn400WhenSortInvalid() throws Exception {
-        mockMvc.perform(get("/api/empleados")
+        mockMvc.perform(get("/api/v1/empleados")
                 .with(httpBasic("admin", "admin123"))
                 .param("sort", "up"))
             .andExpect(status().isBadRequest());
