@@ -1,5 +1,8 @@
 package com.dsw01.practica02.empleados.service;
 
+import com.dsw01.practica02.departamentos.api.dto.DepartamentoSummaryDTO;
+import com.dsw01.practica02.departamentos.domain.Departamento;
+import com.dsw01.practica02.departamentos.service.DepartamentoService;
 import com.dsw01.practica02.common.exception.NotFoundException;
 import com.dsw01.practica02.empleados.api.dto.EmpleadoCreateRequest;
 import com.dsw01.practica02.empleados.api.dto.EmpleadoPageResponse;
@@ -22,10 +25,16 @@ public class EmpleadoService {
 
     private final EmpleadoRepository empleadoRepository;
     private final ClaveGeneratorService claveGeneratorService;
+    private final DepartamentoService departamentoService;
 
-    public EmpleadoService(EmpleadoRepository empleadoRepository, ClaveGeneratorService claveGeneratorService) {
+    public EmpleadoService(
+        EmpleadoRepository empleadoRepository,
+        ClaveGeneratorService claveGeneratorService,
+        DepartamentoService departamentoService
+    ) {
         this.empleadoRepository = empleadoRepository;
         this.claveGeneratorService = claveGeneratorService;
+        this.departamentoService = departamentoService;
     }
 
     public EmpleadoResponse crearEmpleado(EmpleadoCreateRequest request) {
@@ -34,6 +43,7 @@ public class EmpleadoService {
         empleado.setNombre(request.nombre());
         empleado.setDireccion(request.direccion());
         empleado.setTelefono(request.telefono());
+        empleado.setDepartamento(resolveDepartamento(request.departamentoId()));
 
         Empleado guardado = empleadoRepository.save(empleado);
         return toResponse(guardado);
@@ -56,6 +66,7 @@ public class EmpleadoService {
         empleado.setNombre(request.nombre());
         empleado.setDireccion(request.direccion());
         empleado.setTelefono(request.telefono());
+        empleado.setDepartamento(resolveDepartamento(request.departamentoId()));
 
         Empleado actualizado = empleadoRepository.save(empleado);
         return toResponse(actualizado);
@@ -68,7 +79,14 @@ public class EmpleadoService {
         empleadoRepository.deleteById(clave);
     }
 
-    public EmpleadoPageResponse listarEmpleados(int page, int size, String nombre, String clave, String sort) {
+    public EmpleadoPageResponse listarEmpleados(
+        int page,
+        int size,
+        String nombre,
+        String clave,
+        String sort,
+        Long departamentoId
+    ) {
         if (page < 0) {
             throw new IllegalArgumentException("page debe ser mayor o igual a 0");
         }
@@ -95,8 +113,17 @@ public class EmpleadoService {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("clave"), clave));
         }
 
+        if (departamentoId != null) {
+            departamentoService.findActivoById(departamentoId);
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("departamentoId"), departamentoId));
+        }
+
         Page<EmpleadoResponse> responsePage = empleadoRepository.findAll(spec, pageRequest).map(this::toResponse);
         return EmpleadoPageResponse.from(responsePage);
+    }
+
+    public EmpleadoPageResponse listarEmpleados(int page, int size, String nombre, String clave, String sort) {
+        return listarEmpleados(page, size, nombre, clave, sort, null);
     }
 
     private EmpleadoResponse toResponse(Empleado empleado) {
@@ -105,7 +132,22 @@ public class EmpleadoService {
             empleado.getNombre(),
             empleado.getDireccion(),
             empleado.getTelefono(),
-            empleado.getVersion()
+            empleado.getVersion(),
+            toDepartamentoSummary(empleado.getDepartamento())
         );
+    }
+
+    private Departamento resolveDepartamento(Long departamentoId) {
+        if (departamentoId == null) {
+            return null;
+        }
+        return departamentoService.findActivoById(departamentoId);
+    }
+
+    private DepartamentoSummaryDTO toDepartamentoSummary(Departamento departamento) {
+        if (departamento == null) {
+            return null;
+        }
+        return new DepartamentoSummaryDTO(departamento.getId(), departamento.getNombre());
     }
 }

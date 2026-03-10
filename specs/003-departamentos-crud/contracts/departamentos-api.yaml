@@ -1,0 +1,591 @@
+openapi: 3.0.3
+info:
+  title: Empleados API - Departamentos Extension
+  description: |
+    API REST para gestión de departamentos y su relación con empleados.
+    
+    **Authentication**: Todos los endpoints requieren HTTP Basic Authentication (username: `admin`, password: `admin123` en desarrollo).
+    
+    **Versioning**: Esta API usa path versioning (`/api/v1/`). Cambios breaking incrementarán el major version.
+    
+    **New in this version**:
+    - CRUD completo de departamentos con soft delete
+    - Relación many-to-one entre empleados y departamentos
+    - Filtrado de empleados por departamento
+  version: 1.0.0
+  contact:
+    name: DSW01 Team
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+
+tags:
+  - name: Departamentos
+    description: Operaciones CRUD para gestión de departamentos
+  - name: Empleados
+    description: Operaciones extendidas de empleados con soporte de departamentos
+
+security:
+  - basicAuth: []
+
+paths:
+  /api/v1/departamentos:
+    post:
+      tags:
+        - Departamentos
+      summary: Crear nuevo departamento
+      description: Crea un departamento con nombre único. El departamento se marca como activo por defecto.
+      operationId: crearDepartamento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartamentoCreateRequest'
+            examples:
+              tecnologia:
+                summary: Departamento de Tecnología
+                value:
+                  nombre: Tecnología
+              recursosHumanos:
+                summary: Departamento de RR.HH.
+                value:
+                  nombre: Recursos Humanos
+      responses:
+        '201':
+          description: Departamento creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartamentoResponse'
+              examples:
+                created:
+                  value:
+                    id: 1
+                    nombre: Tecnología
+                    activo: true
+        '400':
+          description: Validación fallida (nombre vacío, excede 100 chars, o duplicado)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                nombreVacio:
+                  value:
+                    mensaje: El nombre del departamento es obligatorio
+                nombreDuplicado:
+                  value:
+                    mensaje: Ya existe un departamento con el nombre 'Tecnología'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    get:
+      tags:
+        - Departamentos
+      summary: Listar departamentos activos
+      description: |
+        Retorna una lista paginada de departamentos activos ordenados alfabéticamente por nombre.
+        
+        Los departamentos eliminados (activo=false) están excluidos.
+      operationId: listarDepartamentos
+      parameters:
+        - name: page
+          in: query
+          description: Número de página (0-indexed)
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: size
+          in: query
+          description: Tamaño de página
+          required: false
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: sort
+          in: query
+          description: Orden de clasificación (ej. nombre,asc o nombre,desc)
+          required: false
+          schema:
+            type: string
+            default: nombre,asc
+      responses:
+        '200':
+          description: Lista de departamentos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartamentoPageResponse'
+              examples:
+                listaPaginada:
+                  value:
+                    content:
+                      - id: 3
+                        nombre: Finanzas
+                        activo: true
+                      - id: 2
+                        nombre: Recursos Humanos
+                        activo: true
+                      - id: 1
+                        nombre: Tecnología
+                        activo: true
+                    totalElements: 3
+                    totalPages: 1
+                    number: 0
+                    size: 20
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/departamentos/{id}:
+    get:
+      tags:
+        - Departamentos
+      summary: Obtener departamento por ID
+      description: Retorna los datos completos de un departamento activo por su ID
+      operationId: obtenerDepartamentoPorId
+      parameters:
+        - name: id
+          in: path
+          description: ID del departamento
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Departamento encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartamentoResponse'
+              examples:
+                tecnologia:
+                  value:
+                    id: 1
+                    nombre: Tecnología
+                    activo: true
+        '404':
+          description: Departamento no encontrado o inactivo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                noEncontrado:
+                  value:
+                    mensaje: Departamento con ID 999 no encontrado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags:
+        - Departamentos
+      summary: Actualizar departamento
+      description: |
+        Actualiza el nombre de un departamento activo.
+        
+        **Nota**: No requiere control de versión (optimistic locking), usa last-write-wins.
+      operationId: actualizarDepartamento
+      parameters:
+        - name: id
+          in: path
+          description: ID del departamento a actualizar
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartamentoUpdateRequest'
+            examples:
+              renombrar:
+                value:
+                  nombre: TI y Sistemas
+      responses:
+        '200':
+          description: Departamento actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartamentoResponse'
+              examples:
+                actualizado:
+                  value:
+                    id: 1
+                    nombre: TI y Sistemas
+                    activo: true
+        '400':
+          description: Validación fallida (nombre duplicado o inválido)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Departamento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Departamentos
+      summary: Eliminar departamento (soft delete)
+      description: |
+        Marca el departamento como inactivo (activo=false).
+        
+        **Validación**: No se puede eliminar un departamento que tenga empleados asignados (retorna 409 Conflict).
+      operationId: eliminarDepartamento
+      parameters:
+        - name: id
+          in: path
+          description: ID del departamento a eliminar
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Departamento eliminado exitosamente (marcado como inactivo)
+        '404':
+          description: Departamento no encontrado o ya inactivo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                noEncontrado:
+                  value:
+                    mensaje: Departamento con ID 999 no encontrado
+        '409':
+          description: Conflicto - El departamento tiene empleados asignados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                conEmpleados:
+                  value:
+                    mensaje: No se puede eliminar el departamento porque tiene 5 empleados asignados
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/departamentos/{id}/empleados:
+    get:
+      tags:
+        - Departamentos
+      summary: Listar empleados de un departamento
+      description: Retorna todos los empleados activos asignados al departamento especificado
+      operationId: listarEmpleadosPorDepartamento
+      parameters:
+        - name: id
+          in: path
+          description: ID del departamento
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          description: Número de página (0-indexed)
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Tamaño de página
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Lista de empleados del departamento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoPageResponse'
+              examples:
+                empleadosDeTI:
+                  value:
+                    content:
+                      - codigo: E-001
+                        nombre: Juan Pérez
+                        direccion: Calle 123
+                        telefono: "1234567890"
+                        version: 0
+                        departamento:
+                          id: 1
+                          nombre: Tecnología
+                      - codigo: E-002
+                        nombre: María García
+                        direccion: Av. Principal 456
+                        telefono: "0987654321"
+                        version: 0
+                        departamento:
+                          id: 1
+                          nombre: Tecnología
+                    totalElements: 2
+                    totalPages: 1
+                    number: 0
+                    size: 20
+        '404':
+          description: Departamento no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/empleados:
+    get:
+      tags:
+        - Empleados
+      summary: Listar empleados activos (con filtro de departamento)
+      description: |
+        Retorna una lista paginada de empleados activos.
+        
+        **Extensión**: Ahora soporta filtrado opcional por `departamentoId`.
+      operationId: listarEmpleados
+      parameters:
+        - name: departamentoId
+          in: query
+          description: Filtrar empleados por departamento (opcional)
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          description: Número de página (0-indexed)
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Tamaño de página
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Lista de empleados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoPageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: |
+        HTTP Basic Authentication. 
+        
+        **Desarrollo**: username=`admin`, password=`admin123`
+        
+        **Producción**: Configurar via variables de entorno
+
+  schemas:
+    DepartamentoCreateRequest:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Nombre único del departamento
+          example: Tecnología
+
+    DepartamentoUpdateRequest:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Nuevo nombre del departamento (debe ser único)
+          example: TI y Sistemas
+
+    DepartamentoResponse:
+      type: object
+      required:
+        - id
+        - nombre
+        - activo
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID autogenerado del departamento
+          example: 1
+        nombre:
+          type: string
+          maxLength: 100
+          description: Nombre del departamento
+          example: Tecnología
+        activo:
+          type: boolean
+          description: Indica si el departamento está activo (soft delete)
+          example: true
+
+    DepartamentoPageResponse:
+      type: object
+      required:
+        - content
+        - totalElements
+        - totalPages
+        - number
+        - size
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/DepartamentoResponse'
+        totalElements:
+          type: integer
+          format: int64
+          description: Total de departamentos activos
+          example: 3
+        totalPages:
+          type: integer
+          description: Total de páginas disponibles
+          example: 1
+        number:
+          type: integer
+          description: Número de página actual (0-indexed)
+          example: 0
+        size:
+          type: integer
+          description: Tamaño de página
+          example: 20
+
+    DepartamentoSummaryDTO:
+      type: object
+      required:
+        - id
+        - nombre
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID del departamento
+          example: 1
+        nombre:
+          type: string
+          description: Nombre del departamento
+          example: Tecnología
+      description: Subset de campos de departamento incluido en respuestas de empleados
+
+    EmpleadoResponse:
+      type: object
+      required:
+        - codigo
+        - nombre
+        - direccion
+        - telefono
+        - version
+      properties:
+        codigo:
+          type: string
+          description: Código único del empleado (ej. E-001)
+          example: E-001
+        nombre:
+          type: string
+          maxLength: 100
+          description: Nombre completo del empleado
+          example: Juan Pérez
+        direccion:
+          type: string
+          maxLength: 200
+          description: Dirección del empleado
+          example: Calle 123
+        telefono:
+          type: string
+          maxLength: 20
+          description: Teléfono del empleado
+          example: "1234567890"
+        version:
+          type: integer
+          description: Versión para optimistic locking
+          example: 0
+        departamento:
+          $ref: '#/components/schemas/DepartamentoSummaryDTO'
+          nullable: true
+          description: Departamento asignado (null si no tiene departamento)
+
+    EmpleadoPageResponse:
+      type: object
+      required:
+        - content
+        - totalElements
+        - totalPages
+        - number
+        - size
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmpleadoResponse'
+        totalElements:
+          type: integer
+          format: int64
+          example: 10
+        totalPages:
+          type: integer
+          example: 1
+        number:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 20
+
+    ErrorResponse:
+      type: object
+      required:
+        - mensaje
+      properties:
+        mensaje:
+          type: string
+          description: Descripción del error
+          example: El nombre del departamento es obligatorio
+
+  responses:
+    Unauthorized:
+      description: Autenticación requerida o credenciales inválidas
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+            example: Basic realm="Empleados API"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            unauthorized:
+              value:
+                mensaje: Credenciales inválidas

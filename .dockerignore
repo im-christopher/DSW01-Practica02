@@ -5,3 +5,9 @@ target/
 .specify/
 specs/
 verify.log
+Dockerfile*
+.dockerignore
+*.log*
+.env*
+coverage/
+node_modules/

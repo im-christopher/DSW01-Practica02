@@ -1,8 +1,11 @@
 package com.dsw01.practica02.empleados.domain;
 
+import com.dsw01.practica02.departamentos.domain.Departamento;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
@@ -26,6 +29,13 @@ public class Empleado {
     @Version
     @Column(name = "version", nullable = false)
     private Long version;
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "departamento_id")
+    private Departamento departamento;
+
+    @Column(name = "departamento_id", insertable = false, updatable = false)
+    private Long departamentoId;
 
     public String getClave() {
         return clave;
@@ -65,5 +75,17 @@ public class Empleado {
 
     public void setVersion(Long version) {
         this.version = version;
+    }
+
+    public Departamento getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(Departamento departamento) {
+        this.departamento = departamento;
+    }
+
+    public Long getDepartamentoId() {
+        return departamentoId;
     }
 }

@@ -54,9 +54,12 @@ public class EmpleadoController {
         @RequestParam(defaultValue = "20") @Min(value = 1, message = "size debe ser mayor o igual a 1") @Max(value = 100, message = "size debe ser menor o igual a 100") int size,
         @RequestParam(required = false) String nombre,
         @RequestParam(required = false) @Pattern(regexp = "^E-\\d{3}$", message = "clave debe cumplir formato E-001") String clave,
-        @RequestParam(defaultValue = "asc") @Pattern(regexp = "^(asc|desc)$", message = "sort debe ser asc o desc") String sort
+        @RequestParam(defaultValue = "asc") @Pattern(regexp = "^(asc|desc)$", message = "sort debe ser asc o desc") String sort,
+        @RequestParam(required = false) Long departamentoId
     ) {
-        EmpleadoPageResponse response = empleadoService.listarEmpleados(page, size, nombre, clave, sort);
+        EmpleadoPageResponse response = departamentoId == null
+            ? empleadoService.listarEmpleados(page, size, nombre, clave, sort)
+            : empleadoService.listarEmpleados(page, size, nombre, clave, sort, departamentoId);
         return ResponseEntity.ok(response);
     }
 

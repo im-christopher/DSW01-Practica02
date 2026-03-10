@@ -16,9 +16,9 @@ public class OpenApiConfig {
         String securitySchemeName = "basicAuth";
         return new OpenAPI()
             .info(new Info()
-                .title("API CRUD Empleados")
-                .description("API para gestión de empleados")
-                .version("1.0.0"))
+                .title("API CRUD Empleados y Departamentos")
+                .description("API para gestión de empleados y departamentos")
+                .version("1.1.0"))
             .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
             .components(new Components()
                 .addSecuritySchemes(securitySchemeName, new SecurityScheme()

@@ -2,6 +2,8 @@ package com.dsw01.practica02.common;
 
 import com.dsw01.practica02.common.exception.ConflictException;
 import com.dsw01.practica02.common.exception.NotFoundException;
+import com.dsw01.practica02.departamentos.exception.DepartamentoConEmpleadosException;
+import com.dsw01.practica02.departamentos.exception.DepartamentoNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +57,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<Map<String, String>> handleConflict(ConflictException ex) {
         return buildError(HttpStatus.CONFLICT, "CONFLICT", ex.getMessage());
+    }
+
+    @ExceptionHandler(DepartamentoNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleDepartamentoNotFound(DepartamentoNotFoundException ex) {
+        return buildError(HttpStatus.NOT_FOUND, "DEPARTAMENTO_NOT_FOUND", ex.getMessage());
+    }
+
+    @ExceptionHandler(DepartamentoConEmpleadosException.class)
+    public ResponseEntity<Map<String, String>> handleDepartamentoConEmpleados(DepartamentoConEmpleadosException ex) {
+        return buildError(HttpStatus.CONFLICT, "DEPARTAMENTO_CON_EMPLEADOS", ex.getMessage());
     }
 
     private ResponseEntity<Map<String, String>> buildError(HttpStatus status, String code, String message) {

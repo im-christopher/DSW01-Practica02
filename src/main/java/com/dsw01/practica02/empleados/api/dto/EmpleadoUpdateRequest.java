@@ -17,6 +17,11 @@ public record EmpleadoUpdateRequest(
     String telefono,
 
     @NotNull(message = "version es obligatoria")
-    Long version
+    Long version,
+
+    Long departamentoId
 ) {
+    public EmpleadoUpdateRequest(String nombre, String direccion, String telefono, Long version) {
+        this(nombre, direccion, telefono, version, null);
+    }
 }

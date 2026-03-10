@@ -14,6 +14,11 @@ public record EmpleadoCreateRequest(
 
     @NotNull(message = "telefono es obligatorio")
     @Size(min = 10, message = "telefono debe tener como mínimo 10 caracteres")
-    String telefono
+    String telefono,
+
+    Long departamentoId
 ) {
+    public EmpleadoCreateRequest(String nombre, String direccion, String telefono) {
+        this(nombre, direccion, telefono, null);
+    }
 }

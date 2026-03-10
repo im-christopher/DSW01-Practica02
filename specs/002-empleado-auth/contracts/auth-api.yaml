@@ -1,0 +1,345 @@
+openapi: 3.0.3
+info:
+  title: Empleados Authentication API
+  description: |
+    API de autenticación para empleados del sistema DSW01-Practica02.
+    Proporciona endpoints para login con contraseña y cambio de contraseña.
+    
+    **Seguridad**: 
+    - Login endpoint está exento de Basic Auth (necesario para bootstrap).
+    - Password change endpoint requiere autenticación previa (JWT token en Authorization header).
+    
+    **Rate Limiting**: Login está protegido con rate limiting (5 intentos fallidos por clave en 15 minutos).
+  version: 1.0.0
+  contact:
+    name: DSW01 Team
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Desarrollo local
+  - url: https://api.example.com/api/v1
+    description: Producción
+
+tags:
+  - name: Authentication
+    description: Operaciones de autenticación de empleados
+
+paths:
+  /empleados/login:
+    post:
+      tags:
+        - Authentication
+      summary: Autenticar empleado
+      description: |
+        Autentica un empleado usando su clave única y contraseña.
+        
+        **Comportamiento**:
+        - Valida credenciales contra `empleados.password_hash`
+        - Retorna JWT token válido por 24 horas
+        - Registra evento `LOGIN_SUCCESS` o `LOGIN_FAILURE` en `auth_events`
+        - Rate limiting: máximo 5 intentos fallidos por clave en 15 minutos
+        
+        **Errores comunes**:
+        - `401 Unauthorized`: Credenciales inválidas (no revela si clave o contraseña incorrecta)
+        - `429 Too Many Requests`: Límite de intentos alcanzado (5 fallos en 15 min)
+        - `400 Bad Request`: Formato request inválido
+      operationId: loginEmpleado
+      security: []  # Exento de Basic Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              validCredentials:
+                summary: Credenciales válidas
+                value:
+                  clave: "E-001"
+                  password: "Password123"
+      responses:
+        '200':
+          description: Autenticación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                success:
+                  summary: Login exitoso
+                  value:
+                    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJFLTAwMSIsImlhdCI6MTcwOTg1NjAwMCwiZXhwIjoxNzA5OTQyNDAwfQ.signature"
+                    expiresIn: 86400
+                    clave: "E-001"
+        '400':
+          description: Request inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingField:
+                  summary: Campo requerido faltante
+                  value:
+                    timestamp: "2026-03-08T14:30:00Z"
+                    status: 400
+                    error: "Bad Request"
+                    message: "Campo 'password' es requerido"
+                    path: "/api/v1/empleados/login"
+        '401':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidCredentials:
+                  summary: Credenciales incorrectas
+                  value:
+                    timestamp: "2026-03-08T14:30:00Z"
+                    status: 401
+                    error: "Unauthorized"
+                    message: "Credenciales inválidas"
+                    path: "/api/v1/empleados/login"
+        '429':
+          description: Límite de intentos excedido (rate limiting)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimitExceeded:
+                  summary: Demasiados intentos fallidos
+                  value:
+                    timestamp: "2026-03-08T14:30:00Z"
+                    status: 429
+                    error: "Too Many Requests"
+                    message: "Demasiados intentos fallidos. Intente nuevamente en 15 minutos."
+                    path: "/api/v1/empleados/login"
+
+  /empleados/{clave}/password:
+    put:
+      tags:
+        - Authentication
+      summary: Cambiar contraseña de empleado
+      description: |
+        Permite a un empleado autenticado cambiar su contraseña.
+        
+        **Comportamiento**:
+        - Requiere autenticación (JWT token en Authorization header)
+        - Valida que contraseña actual sea correcta
+        - Valida que nueva contraseña cumpla requisitos (8+ chars, letra + número)
+        - Actualiza `password_hash` y `password_changed_at`
+        - Invalida todos los tokens JWT emitidos antes del cambio
+        - Registra evento `PASSWORD_CHANGED` en `auth_events`
+        
+        **Autorización**:
+        - Usuario autenticado solo puede cambiar su propia contraseña
+        - Intento de cambiar contraseña de otro empleado resulta en `403 Forbidden`
+        
+        **Errores comunes**:
+        - `400 Bad Request`: Nueva contraseña no cumple requisitos
+        - `401 Unauthorized`: Token no provisto o inválido
+        - `403 Forbidden`: Contraseña actual incorrecta o intento de cambiar contraseña de otro empleado
+        - `404 Not Found`: Empleado no existe
+      operationId: changePassword
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: clave
+          in: path
+          required: true
+          description: Clave única del empleado (formato E-XXX)
+          schema:
+            type: string
+            pattern: '^E-\d{3}$'
+          example: "E-001"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+            examples:
+              validChange:
+                summary: Cambio válido
+                value:
+                  currentPassword: "OldPassword123"
+                  newPassword: "NewPassword456"
+      responses:
+        '204':
+          description: Contraseña cambiada exitosamente
+        '400':
+          description: Request inválido o nueva contraseña no cumple requisitos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                weakPassword:
+                  summary: Contraseña débil
+                  value:
+                    timestamp: "2026-03-08T14:30:00Z"
+                    status: 400
+                    error: "Bad Request"
+                    message: "Contraseña debe tener mínimo 8 caracteres, al menos una letra y un número"
+                    path: "/api/v1/empleados/E-001/password"
+        '401':
+          description: No autenticado o token inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                noToken:
+                  summary: Token no provisto
+                  value:
+                    timestamp: "2026-03-08T14:30:00Z"
+                    status: 401
+                    error: "Unauthorized"
+                    message: "Token de autenticación requerido"
+                    path: "/api/v1/empleados/E-001/password"
+        '403':
+          description: Contraseña actual incorrecta o intento de cambiar contraseña de otro empleado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                wrongCurrentPassword:
+                  summary: Contraseña actual incorrecta
+                  value:
+                    timestamp: "2026-03-08T14:30:00Z"
+                    status: 403
+                    error: "Forbidden"
+                    message: "Contraseña actual incorrecta"
+                    path: "/api/v1/empleados/E-001/password"
+                wrongEmployee:
+                  summary: Intento de cambiar contraseña de otro empleado
+                  value:
+                    timestamp: "2026-03-08T14:30:00Z"
+                    status: 403
+                    error: "Forbidden"
+                    message: "No autorizado para cambiar contraseña de otro empleado"
+                    path: "/api/v1/empleados/E-002/password"
+        '404':
+          description: Empleado no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  summary: Empleado no existe
+                  value:
+                    timestamp: "2026-03-08T14:30:00Z"
+                    status: 404
+                    error: "Not Found"
+                    message: "Empleado con clave E-999 no encontrado"
+                    path: "/api/v1/empleados/E-999/password"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token obtenido del endpoint `/empleados/login`.
+        Incluir en header: `Authorization: Bearer <token>`
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - clave
+        - password
+      properties:
+        clave:
+          type: string
+          pattern: '^E-\d{3}$'
+          description: Clave única del empleado (formato E-XXX)
+          example: "E-001"
+        password:
+          type: string
+          format: password
+          minLength: 1
+          description: Contraseña del empleado (plain text, transmitida vía HTTPS)
+          example: "Password123"
+
+    LoginResponse:
+      type: object
+      required:
+        - token
+        - expiresIn
+        - clave
+      properties:
+        token:
+          type: string
+          description: JWT token firmado (válido por 24 horas)
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJFLTAwMSIsImlhdCI6MTcwOTg1NjAwMCwiZXhwIjoxNzA5OTQyNDAwfQ.signature"
+        expiresIn:
+          type: integer
+          format: int64
+          description: Segundos hasta expiración del token (86400 = 24 horas)
+          example: 86400
+        clave:
+          type: string
+          pattern: '^E-\d{3}$'
+          description: Clave del empleado autenticado (para confirmación cliente)
+          example: "E-001"
+
+    ChangePasswordRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+          format: password
+          minLength: 1
+          description: Contraseña actual del empleado (para verificación)
+          example: "OldPassword123"
+        newPassword:
+          type: string
+          format: password
+          minLength: 8
+          pattern: '^(?=.*[A-Za-z])(?=.*\d).{8,}$'
+          description: |
+            Nueva contraseña. Requisitos:
+            - Mínimo 8 caracteres
+            - Al menos una letra (a-z, A-Z)
+            - Al menos un número (0-9)
+          example: "NewPassword456"
+
+    ErrorResponse:
+      type: object
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp del error (ISO 8601)
+          example: "2026-03-08T14:30:00Z"
+        status:
+          type: integer
+          description: Código HTTP status
+          example: 400
+        error:
+          type: string
+          description: Nombre del error HTTP
+          example: "Bad Request"
+        message:
+          type: string
+          description: Mensaje descriptivo del error
+          example: "Contraseña debe tener mínimo 8 caracteres"
+        path:
+          type: string
+          description: Path del endpoint que generó el error
+          example: "/api/v1/empleados/login"
