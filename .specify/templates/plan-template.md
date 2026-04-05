@@ -18,13 +18,13 @@
 -->
 
 **Language/Version**: Java 17 (mandatory)  
-**Primary Dependencies**: Spring Boot 3.x, Spring Security, Spring Data JPA, springdoc-openapi  
+**Primary Dependencies**: Spring Boot 3.x, Spring Security, Spring Data JPA, springdoc-openapi, Angular 21  
 **Storage**: PostgreSQL (mandatory)  
-**Testing**: JUnit 5 + Spring Boot Test (unit + integration)  
-**Target Platform**: Linux container runtime (Docker)
-**Project Type**: Backend web-service  
+**Testing**: JUnit 5 + Spring Boot Test (backend) + Angular test stack for UI and accessibility checks  
+**Target Platform**: Linux container runtime (Docker; backend + frontend)
+**Project Type**: Full-stack web application  
 **Performance Goals**: [feature-specific measurable goals]  
-**Constraints**: Basic Auth required; Swagger contract required; secrets via environment variables  
+**Constraints**: Basic Auth required; Swagger contract required; Angular 21 frontend required; UI accessibility/usability baseline required; secrets via environment variables  
 **API Versioning**: Public endpoints MUST be path-versioned using `/api/v{major}/...`  
 **Scale/Scope**: [feature-specific scope]
 
@@ -32,13 +32,15 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- [ ] Backend-only scope confirmed (no frontend scope added)
+- [ ] Full-stack scope confirmed (Spring Boot backend + Angular 21 frontend)
 - [ ] Java 17 and Spring Boot 3.x compatibility confirmed
+- [ ] Angular 21 compatibility and frontend architecture confirmed
 - [ ] Basic Auth enforced for exposed endpoints
 - [ ] PostgreSQL persistence strategy and migrations defined
-- [ ] Docker execution/build strategy documented
+- [ ] Docker execution/build strategy documented for backend and frontend
 - [ ] Swagger/OpenAPI documentation impact defined
 - [ ] API path versioning strategy defined (`/api/v{major}/...`)
+- [ ] UI accessibility/usability baseline defined (keyboard, focus, contrast, validation feedback)
 
 ## Project Structure
 

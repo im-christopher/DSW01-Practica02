@@ -92,15 +92,20 @@
 
 ### Constitution Alignment *(mandatory)*
 
-- **CA-001**: Feature MUST remain backend-only and compatible with Spring Boot 3.x + Java 17.
+- **CA-001**: Feature MUST remain compatible with Spring Boot 3.x + Java 17 backend and
+  MUST include Angular 21 frontend scope for user-facing workflow changes.
 - **CA-002**: Feature MUST enforce HTTP Basic Authentication on exposed endpoints unless
   explicitly exempted by governance.
 - **CA-003**: Feature MUST define PostgreSQL persistence impact (schema, migrations,
   and data integrity behavior).
-- **CA-004**: Feature MUST document Docker runtime/build impact.
+- **CA-004**: Feature MUST document Docker runtime/build impact for backend and
+  frontend components.
 - **CA-005**: Feature MUST document OpenAPI/Swagger changes for all affected endpoints.
 - **CA-006**: Feature MUST expose affected endpoints under versioned paths
   (`/api/v{major}/...`) and define major-version bump impact for breaking changes.
+- **CA-007**: Feature MUST define UI accessibility and usability acceptance criteria for
+  critical user flows (semantic structure, keyboard access, visible focus, readable
+  contrast, and clear validation/error feedback).
 
 *Example of marking unclear requirements:*
 

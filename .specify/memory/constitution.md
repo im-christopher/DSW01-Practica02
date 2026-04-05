@@ -1,8 +1,9 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 1.1.0
+- Version change: 1.1.0 → 2.0.0
 - Modified principles:
-	- V. Containerization & API Contract Transparency → V. Containerization & Versioned API Contract Transparency
+	- I. Backend-Only Architecture → I. Full-Stack Delivery with Angular 21 Frontend
+	- V. Containerization & Versioned API Contract Transparency → V. Containerized Full-Stack & Versioned API Transparency
 - Added sections:
 	- None
 - Removed sections:
@@ -11,9 +12,8 @@ Sync Impact Report
 	- ✅ updated: .specify/templates/plan-template.md
 	- ✅ updated: .specify/templates/spec-template.md
 	- ✅ updated: .specify/templates/tasks-template.md
-	- ✅ updated: specs/001-crud-empleados/quickstart.md
 	- ✅ updated: .github/agents/copilot-instructions.md
-	- ⚠ pending: .specify/templates/commands/*.md (directory not present; nothing to update)
+	- ✅ not applicable: .specify/templates/commands/*.md (directory not present)
 - Deferred TODOs:
 	- None
 -->
@@ -22,14 +22,14 @@ Sync Impact Report
 
 ## Core Principles
 
-### I. Backend-Only Architecture
-All scoped features MUST target backend capabilities only and MUST be implemented as
-Spring Boot services and components. Frontend/UI scope MUST be excluded unless a
-governance amendment explicitly introduces it. API-first service boundaries MUST be
-defined before implementation begins.
+### I. Full-Stack Delivery with Angular 21 Frontend
+All scoped features MUST support full-stack delivery. Backend capabilities MUST be
+implemented in Spring Boot services, and user-facing interfaces MUST be implemented in
+Angular 21. New features that impact user workflows MUST include both API behavior and
+frontend interaction updates in the same delivery slice.
 
-Rationale: A backend-only scope keeps delivery focused, reduces ambiguity, and preserves
-system cohesion.
+Rationale: Coordinated full-stack delivery reduces integration drift and produces
+testable value for end users in each increment.
 
 ### II. Standard Runtime Baseline
 All services MUST run on Java 17 and Spring Boot 3.x. New code MUST use Spring Boot 3
@@ -56,26 +56,42 @@ or change data behavior MUST include integration tests covering repository and A
 Rationale: PostgreSQL standardization and migration discipline minimize runtime drift and
 data integrity regressions.
 
-### V. Containerization & Versioned API Contract Transparency
-Services MUST be executable with Docker and documented with OpenAPI/Swagger. Every
-public endpoint MUST appear in generated API docs with authentication expectations and
-response models. Every public backend route MUST be explicitly versioned in the path
-using `/api/v{major}/...` (for example `/api/v1/empleados`), and breaking API changes
-MUST increment the major version path. Container build/runtime definitions MUST be
-reproducible in development and CI.
+### V. Containerized Full-Stack & Versioned API Transparency
+Backend and frontend applications MUST be executable in containerized environments for
+development and CI validation. Services MUST be documented with OpenAPI/Swagger, and
+every public endpoint MUST include authentication expectations and response models.
+Every public backend route MUST be explicitly versioned in the path using
+`/api/v{major}/...` (for example `/api/v1/empleados`), and breaking API changes MUST
+increment the major version path.
 
-Rationale: Container-first execution and explicit API contracts improve deployment
-predictability and integration readiness.
+Rationale: Containerized full-stack execution and explicit API contracts improve
+deployment predictability and integration readiness.
+
+### VI. Accessibility & Usability Baseline for UI
+Angular 21 interfaces MUST satisfy baseline accessibility and usability requirements.
+At minimum, user-critical screens MUST provide semantic structure, keyboard operability,
+visible focus indicators, color contrast suitable for normal vision conditions, and
+clear form validation/error feedback. Usability acceptance criteria MUST include task
+completion clarity (labels, navigation intent, and actionable error messages).
+
+Rationale: Accessibility and usability are quality requirements, not optional polish,
+and directly impact adoption and error rates.
 
 ## Technical Standards
 
 - Framework: Spring Boot 3.x (Web, Security, Validation, Data JPA as needed).
 - Language: Java 17.
+- Frontend Framework: Angular 21 (mandatory for user-facing web UI).
 - Database: PostgreSQL as system of record.
 - API Docs: springdoc-openapi/Swagger UI enabled in non-production by default.
 - API Versioning: Public routes MUST use `/api/v{major}/...`; non-versioned public
 	routes are non-compliant.
-- Container Runtime: Dockerfile and local container execution MUST be maintained.
+- UI Accessibility: Semantic HTML, keyboard navigation, visible focus state, and WCAG-
+	aligned contrast for critical flows are mandatory.
+- UI Usability: Critical workflows MUST provide clear labels, actionable validation,
+	and predictable navigation outcomes.
+- Container Runtime: Dockerfile/compose definitions and local container execution MUST
+	be maintained for backend and frontend components.
 - Configuration: Environment variables MUST be preferred for secrets and deploy-specific
 	values; committed defaults MAY exist only for local development and MUST be clearly
 	non-production.
@@ -83,13 +99,15 @@ predictability and integration readiness.
 ## Delivery Workflow & Quality Gates
 
 1. Specifications and plans MUST include constitution checks before implementation.
-2. Pull requests MUST confirm: Java 17/Spring Boot 3 compliance, Basic Auth coverage,
-	 PostgreSQL alignment, Docker viability, versioned API paths, and Swagger
-	 documentation completeness.
+2. Pull requests MUST confirm: Java 17/Spring Boot 3 compliance, Angular 21 frontend
+	alignment, Basic Auth coverage, PostgreSQL alignment, Docker viability, versioned API
+	paths, Swagger documentation completeness, and UI accessibility/usability checks.
 3. Changes affecting authentication, persistence, or API contracts MUST include tests
 	 and updated operational documentation.
-4. CI pipelines SHOULD run unit and integration tests; failures in security or migration
-	 checks MUST block merge.
+4. Changes affecting UI flows MUST include frontend tests that verify accessibility and
+	validation behavior for critical user paths.
+5. CI pipelines SHOULD run backend unit/integration tests and frontend validation tests;
+	failures in security, migration, or accessibility checks MUST block merge.
 
 ## Governance
 This constitution supersedes local conventions for architecture and delivery quality.
@@ -103,11 +121,13 @@ Versioning policy:
 
 Compliance review expectations:
 - Every plan and spec MUST include an explicit constitution compliance check.
-- Every task breakdown MUST include security, data, containerization, and API-doc tasks
-	when applicable.
+- Every task breakdown MUST include security, data, containerization, API-doc, and UI
+	accessibility/usability tasks when applicable.
 - Every API-impacting change MUST include explicit verification of route versioning and
 	OpenAPI path updates.
+- Every UI-impacting change MUST include explicit verification of keyboard navigation,
+	focus visibility, readable contrast, and clear validation messaging.
 - Non-compliant changes MUST be remediated before merge or explicitly waived by approved
 	governance exception.
 
-**Version**: 1.1.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-03-08
+**Version**: 2.0.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-04-05

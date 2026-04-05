@@ -1,0 +1,43 @@
+{
+  "deleteDepartamentoAfterUnassign": "204",
+  "schemaValidation": "departamentos|t",
+  "getDepartamentoA": {
+    "id": 1,
+    "nombre": "Tecnologia QA",
+    "activo": true
+  },
+  "queryByDepartamentoFilter": {
+    "total": 0
+  },
+  "listDepartamentos": {
+    "total": 2,
+    "firstNames": [
+      "Finanzas QA",
+      "Tecnologia QA"
+    ]
+  },
+  "createDepartamentoB": {
+    "id": 2,
+    "nombre": "Finanzas QA",
+    "activo": true
+  },
+  "finalDepartamentoNames": [
+    "Tecnologia QA Updated"
+  ],
+  "createDepartamentoA": {
+    "id": 1,
+    "nombre": "Tecnologia QA",
+    "activo": true
+  },
+  "unassignEmpleado": null,
+  "createEmpleadoAssigned": null,
+  "deleteDepartamentoWithEmployee": "UNEXPECTED_SUCCESS",
+  "queryByDepartamentoEndpoint": {
+    "total": 0
+  },
+  "updateDepartamentoA": {
+    "id": 1,
+    "nombre": "Tecnologia QA Updated",
+    "activo": true
+  }
+}
