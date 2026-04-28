@@ -1,0 +1,39 @@
+:root {
+  --bg: #f5f7f4;
+  --surface: #ffffff;
+  --ink: #1f2a2e;
+  --muted: #53626b;
+  --primary: #117a65;
+  --primary-strong: #0a5f4e;
+  --accent: #f4a259;
+  --danger: #b02a37;
+  --border: #d8e0dd;
+  --focus: #155eef;
+  --success-bg: #e8f8f0;
+  --error-bg: #fdecec;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background:
+    radial-gradient(circle at top right, #d7f5e6 0, transparent 38%),
+    radial-gradient(circle at bottom left, #fff3dc 0, transparent 44%),
+    var(--bg);
+  color: var(--ink);
+  font-family: 'Segoe UI', 'Trebuchet MS', 'Gill Sans', sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}

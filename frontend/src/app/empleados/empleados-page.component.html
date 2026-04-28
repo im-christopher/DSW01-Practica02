@@ -1,0 +1,118 @@
+<a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
+
+<header class="hero" role="banner">
+  <div class="hero-copy">
+    <p class="eyebrow">Panel administrativo</p>
+    <h1>Gestion de empleados</h1>
+    <p class="hero-subtitle">Controla registros, altas, ediciones y bajas logicas desde un solo tablero.</p>
+  </div>
+  <div class="hero-actions">
+    <button type="button" class="btn btn-secondary" (click)="logout()">Cerrar sesion</button>
+  </div>
+</header>
+
+<main id="contenido-principal" class="layout" role="main">
+  <section class="card" aria-labelledby="filtros-title">
+    <h2 id="filtros-title">Filtros y navegacion</h2>
+    <form [formGroup]="filtersForm" class="form-row" (ngSubmit)="aplicarFiltros()">
+      <label>
+        Buscar por nombre
+        <input type="text" formControlName="nombre" />
+      </label>
+      <label>
+        Buscar por clave
+        <input type="text" formControlName="clave" placeholder="E-001" />
+      </label>
+      <label>
+        Orden
+        <select formControlName="sort">
+          <option value="asc">Ascendente</option>
+          <option value="desc">Descendente</option>
+        </select>
+      </label>
+      <label>
+        Incluir inactivos
+        <input type="checkbox" formControlName="includeInactive" />
+      </label>
+      <div class="action-group">
+        <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+        <button type="button" class="btn btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card" aria-labelledby="form-title">
+    <h2 id="form-title">Crear o editar empleado</h2>
+    <app-empleado-form
+      [empleado]="selectedEmpleado"
+      [submitting]="submitting"
+      (save)="guardar($event)"
+      (clear)="clearSelection()"
+    />
+  </section>
+
+  <section class="card" aria-labelledby="tabla-title">
+    <div class="table-header">
+      <h2 id="tabla-title">Listado de empleados</h2>
+      <div class="table-stats">
+        <span class="stat-pill">Pagina {{ page + 1 }} de {{ totalPages || 1 }}</span>
+        <span class="stat-pill">Total {{ totalElements }}</span>
+      </div>
+    </div>
+
+    <div class="feedback success" *ngIf="announcer.status()" aria-live="polite">{{ announcer.status() }}</div>
+    <div class="feedback error" *ngIf="announcer.error()" aria-live="assertive">{{ announcer.error() }}</div>
+
+    <div class="table-wrap" [attr.aria-busy]="loading">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Clave</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Direccion</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Version</th>
+            <th scope="col">Activo</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of empleados">
+            <td>{{ emp.clave }}</td>
+            <td>{{ emp.nombre }}</td>
+            <td>{{ emp.direccion }}</td>
+            <td>{{ emp.telefono }}</td>
+            <td>{{ emp.version }}</td>
+            <td>{{ emp.activo ? 'Si' : 'No' }}</td>
+            <td class="row-actions">
+              <button type="button" class="btn btn-secondary" (click)="editar(emp)">Editar</button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                [disabled]="deletingKey === emp.clave"
+                (click)="eliminar(emp.clave)"
+              >
+                {{ deletingKey === emp.clave ? 'Eliminando...' : 'Eliminar' }}
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!loading && empleados.length === 0">
+            <td colspan="7">No hay resultados para los filtros actuales.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager">
+      <button type="button" class="btn btn-secondary" [disabled]="page === 0" (click)="previousPage()">Anterior</button>
+      <button type="button" class="btn btn-secondary" [disabled]="page + 1 >= totalPages" (click)="nextPage()">Siguiente</button>
+    </div>
+  </section>
+
+  <app-conflict-dialog
+    [visible]="showConflict"
+    [current]="conflictCurrent"
+    (reloadLatest)="loadLatestOnConflict()"
+    (dismiss)="closeConflict()"
+  />
+</main>

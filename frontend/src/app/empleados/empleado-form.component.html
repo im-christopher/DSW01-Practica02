@@ -1,0 +1,33 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="form-grid" novalidate>
+  <label>
+    Clave (solo edicion)
+    <input type="text" formControlName="clave" readonly />
+  </label>
+
+  <label>
+    Nombre
+    <input type="text" formControlName="nombre" />
+  </label>
+
+  <label>
+    Direccion
+    <input type="text" formControlName="direccion" />
+  </label>
+
+  <label>
+    Telefono
+    <input type="text" formControlName="telefono" />
+  </label>
+
+  <label>
+    Version
+    <input type="number" formControlName="version" min="0" />
+  </label>
+
+  <div class="action-group">
+    <button type="submit" class="btn btn-primary" [disabled]="submitting">
+      {{ submitting ? 'Guardando...' : 'Guardar' }}
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="reset()">Nuevo</button>
+  </div>
+</form>

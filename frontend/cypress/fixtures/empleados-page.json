@@ -1,0 +1,18 @@
+{
+  "content": [
+    {
+      "clave": "E-001",
+      "nombre": "Juan Perez",
+      "direccion": "Av. Central 123",
+      "telefono": "5551234567",
+      "version": 1,
+      "activo": true
+    }
+  ],
+  "number": 0,
+  "size": 10,
+  "totalElements": 1,
+  "totalPages": 1,
+  "first": true,
+  "last": true
+}

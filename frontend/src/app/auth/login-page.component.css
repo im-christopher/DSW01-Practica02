@@ -1,0 +1,95 @@
+.login-layout {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.login-card {
+  width: min(420px, 100%);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 12px 30px rgba(18, 28, 32, 0.1);
+}
+
+.eyebrow {
+  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0d735e;
+  font-weight: 700;
+}
+
+h1 {
+  margin: 0.4rem 0;
+}
+
+.subtitle {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+
+form {
+  display: grid;
+  gap: 0.65rem;
+}
+
+label {
+  font-weight: 600;
+}
+
+input {
+  min-height: 2.5rem;
+  border: 1px solid #b9c7c2;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.7rem;
+}
+
+.btn {
+  margin-top: 0.4rem;
+  min-height: 2.7rem;
+  border: 0;
+  border-radius: 0.55rem;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--primary-strong);
+}
+
+.feedback {
+  border-radius: 0.55rem;
+  padding: 0.6rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.feedback.success {
+  background: var(--success-bg);
+  color: #195f43;
+}
+
+.feedback.error {
+  background: var(--error-bg);
+  color: #7a1e2a;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: auto;
+  background: #0b5d4a;
+  color: #fff;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
