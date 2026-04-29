@@ -35,14 +35,20 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
         run: |
           if [ -z "$SONAR_TOKEN" ]; then
-            echo "Falta el secret SONAR_TOKEN"
+            echo "❌ Falta el secret SONAR_TOKEN en GitHub Settings > Secrets"
             exit 1
           fi
 
           if [ -z "$SONAR_HOST_URL" ]; then
-            echo "Falta el secret SONAR_HOST_URL"
+            echo "❌ Falta el secret SONAR_HOST_URL en GitHub Settings > Secrets"
+            exit 1
+          fi
+
+          if [ -z "$SONAR_ORGANIZATION" ]; then
+            echo "❌ Falta la variable SONAR_ORGANIZATION en GitHub Settings > Variables"
             exit 1
           fi
 
@@ -56,13 +62,8 @@ jobs:
         run: |
           PROJECT_KEY="${SONAR_PROJECT_KEY:-dsw01-practica02}"
 
-          EXTRA_ARGS=()
-          if [ -n "$SONAR_ORGANIZATION" ]; then
-            EXTRA_ARGS+=("-Dsonar.organization=$SONAR_ORGANIZATION")
-          fi
-
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey="$PROJECT_KEY" \
+            -Dsonar.organization="$SONAR_ORGANIZATION" \
             -Dsonar.host.url="$SONAR_HOST_URL" \
-            -Dsonar.token="$SONAR_TOKEN" \
-            "${EXTRA_ARGS[@]}"
+            -Dsonar.token="$SONAR_TOKEN"
