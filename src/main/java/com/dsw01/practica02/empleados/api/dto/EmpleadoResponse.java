@@ -5,6 +5,7 @@ public record EmpleadoResponse(
     String nombre,
     String direccion,
     String telefono,
-    Long version
+    Long version,
+    boolean activo
 ) {
 }

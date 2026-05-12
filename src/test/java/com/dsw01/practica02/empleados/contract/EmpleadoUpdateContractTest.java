@@ -1,6 +1,7 @@
 package com.dsw01.practica02.empleados.contract;
 
 import com.dsw01.practica02.common.GlobalExceptionHandler;
+import com.dsw01.practica02.common.exception.ConflictException;
 import com.dsw01.practica02.config.SecurityConfig;
 import com.dsw01.practica02.empleados.api.EmpleadoController;
 import com.dsw01.practica02.empleados.api.dto.EmpleadoResponse;
@@ -42,7 +43,8 @@ class EmpleadoUpdateContractTest {
             "N".repeat(100),
             "D".repeat(100),
             "T".repeat(100),
-            1L
+            1L,
+            true
         );
         when(empleadoService.actualizarEmpleado(any(), any())).thenReturn(response);
 
@@ -61,5 +63,28 @@ class EmpleadoUpdateContractTest {
                 .content(payload))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.version").value(1));
+    }
+
+    @Test
+    void shouldReturn409WithConflictPayload() throws Exception {
+        when(empleadoService.actualizarEmpleado(any(), any()))
+            .thenThrow(new ConflictException("Conflicto de concurrencia"));
+
+        String payload = """
+            {
+              \"nombre\": \"%s\",
+              \"direccion\": \"%s\",
+              \"telefono\": \"%s\",
+              \"version\": 0
+            }
+            """.formatted("N".repeat(100), "D".repeat(100), "T".repeat(100));
+
+        mockMvc.perform(put("/api/v1/empleados/E-001")
+                .with(httpBasic("admin", "admin123"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(payload))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.code").value("CONFLICT"))
+            .andExpect(jsonPath("$.message").value("Conflicto de concurrencia"));
     }
 }

@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,14 +43,14 @@ class EmpleadoListIntegrationTest {
     @Test
     void shouldUseDefaultPaginationWhenParamsMissing() throws Exception {
         EmpleadoPageResponse emptyPage = new EmpleadoPageResponse(List.<EmpleadoResponse>of(), 0, 20, 0, 0, true, true);
-        when(empleadoService.listarEmpleados(anyInt(), anyInt(), isNull(), isNull(), anyString()))
+        when(empleadoService.listarEmpleados(anyInt(), anyInt(), isNull(), isNull(), anyString(), eq(false)))
             .thenReturn(emptyPage);
 
         mockMvc.perform(get("/api/v1/empleados")
                 .with(httpBasic("admin", "admin123")))
             .andExpect(status().isOk());
 
-        verify(empleadoService).listarEmpleados(0, 20, null, null, "asc");
+        verify(empleadoService).listarEmpleados(0, 20, null, null, "asc", false);
     }
 
     @Test

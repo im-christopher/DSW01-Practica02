@@ -23,6 +23,9 @@ public class Empleado {
     @Column(name = "telefono", nullable = false, length = 100)
     private String telefono;
 
+    @Column(name = "activo", nullable = false)
+    private boolean activo = true;
+
     @Version
     @Column(name = "version", nullable = false)
     private Long version;
@@ -65,5 +68,13 @@ public class Empleado {
 
     public void setVersion(Long version) {
         this.version = version;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }

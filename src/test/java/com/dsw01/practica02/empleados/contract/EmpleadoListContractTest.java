@@ -45,7 +45,8 @@ class EmpleadoListContractTest {
             "N".repeat(100),
             "D".repeat(100),
             "T".repeat(100),
-            0L
+            0L,
+            true
         );
         EmpleadoPageResponse pageResponse = new EmpleadoPageResponse(
             List.of(empleado),
@@ -57,7 +58,7 @@ class EmpleadoListContractTest {
             true
         );
 
-        when(empleadoService.listarEmpleados(anyInt(), anyInt(), eq("N"), eq(null), eq("asc")))
+        when(empleadoService.listarEmpleados(anyInt(), anyInt(), eq("N"), eq(null), eq("asc"), eq(false)))
             .thenReturn(pageResponse);
 
         mockMvc.perform(get("/api/v1/empleados")
@@ -67,6 +68,7 @@ class EmpleadoListContractTest {
             .andExpect(jsonPath("$.number").value(0))
             .andExpect(jsonPath("$.size").value(20))
             .andExpect(jsonPath("$.totalElements").value(1))
+            .andExpect(jsonPath("$.content[0].activo").value(true))
             .andExpect(jsonPath("$.content[0].clave").value("E-001"));
     }
 }

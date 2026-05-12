@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: Frontend Employee Management Contract
+  version: 1.0.0
+  description: Contract used by Angular login + employee CRUD screens.
+servers:
+  - url: http://localhost:8080
+security:
+  - basicAuth: []
+paths:
+  /api/v1/empleados:
+    get:
+      summary: List employees (active by default)
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 0, default: 0 }
+        - in: query
+          name: size
+          schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+        - in: query
+          name: nombre
+          schema: { type: string }
+        - in: query
+          name: clave
+          schema:
+            type: string
+            pattern: '^E-\\d{3}$'
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+        - in: query
+          name: includeInactive
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Employee page response
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
+    post:
+      summary: Create employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoCreateRequest'
+      responses:
+        '201':
+          description: Employee created
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
+  /api/v1/empleados/{clave}:
+    get:
+      summary: Get employee by key
+      parameters:
+        - in: path
+          name: clave
+          required: true
+          schema:
+            type: string
+            pattern: '^E-\\d{3}$'
+      responses:
+        '200':
+          description: Employee response
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+    put:
+      summary: Update employee using optimistic version
+      parameters:
+        - in: path
+          name: clave
+          required: true
+          schema:
+            type: string
+            pattern: '^E-\\d{3}$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoUpdateRequest'
+      responses:
+        '200':
+          description: Employee updated
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+        '409':
+          description: Version conflict
+    delete:
+      summary: Logical delete employee (set inactive)
+      parameters:
+        - in: path
+          name: clave
+          required: true
+          schema:
+            type: string
+            pattern: '^E-\\d{3}$'
+      responses:
+        '204':
+          description: Marked inactive
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    EmpleadoCreateRequest:
+      type: object
+      required: [nombre, direccion, telefono]
+      properties:
+        nombre: { type: string, maxLength: 100 }
+        direccion: { type: string, maxLength: 100 }
+        telefono: { type: string, minLength: 10 }
+    EmpleadoUpdateRequest:
+      type: object
+      required: [nombre, direccion, telefono, version]
+      properties:
+        nombre: { type: string, maxLength: 100 }
+        direccion: { type: string, maxLength: 100 }
+        telefono: { type: string, minLength: 10 }
+        version: { type: integer, format: int64 }

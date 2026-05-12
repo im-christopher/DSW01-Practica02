@@ -49,7 +49,8 @@ class EmpleadoControllerContractTest {
             "N".repeat(100),
             "D".repeat(100),
             "T".repeat(100),
-            0L
+            0L,
+            true
         );
 
         when(empleadoService.crearEmpleado(any(EmpleadoCreateRequest.class))).thenReturn(response);
@@ -76,7 +77,8 @@ class EmpleadoControllerContractTest {
             "N".repeat(100),
             "D".repeat(100),
             "T".repeat(100),
-            0L
+            0L,
+            true
         );
 
         when(empleadoService.obtenerPorClave(eq("E-001"))).thenReturn(response);

@@ -1,72 +1,72 @@
-﻿{
-    "unassignEmpleado":  {
-                             "body":  {
-                                          "clave":  "E-004",
-                                          "nombre":  "Emp-1773127104",
-                                          "direccion":  "Dir-1773127104",
-                                          "telefono":  "1234567890",
-                                          "version":  1,
-                                          "departamento":  null
-                                      },
-                             "status":  200
-                         },
-    "deleteAfterUnassign":  {
-                                "status":  204
-                            },
-    "createDepartamento":  {
-                               "body":  {
-                                            "id":  9,
-                                            "nombre":  "Dept-1773127104",
-                                            "activo":  true
-                                        },
-                               "status":  201
-                           },
-    "swaggerUi":  {
-                      "status":  200
-                  },
-    "byDepartamentoEndpoint":  {
-                                   "totalElements":  1,
-                                   "status":  200
-                               },
-    "filterByDepartamento":  {
-                                 "totalElements":  1,
-                                 "status":  200
-                             },
-    "getDepartamento":  {
-                            "body":  {
-                                         "id":  9,
-                                         "nombre":  "Dept-1773127104",
-                                         "activo":  true
-                                     },
-                            "status":  200
-                        },
-    "createEmpleadoAssigned":  {
-                                   "body":  {
-                                                "clave":  "E-004",
-                                                "nombre":  "Emp-1773127104",
-                                                "direccion":  "Dir-1773127104",
-                                                "telefono":  "1234567890",
-                                                "version":  0,
-                                                "departamento":  {
-                                                                     "id":  10,
-                                                                     "nombre":  "DeptRel-1773127104"
-                                                                 }
-                                            },
-                                   "status":  201
-                               },
-    "deleteWithEmployee":  {
-                               "body":  "{\"code\":\"DEPARTAMENTO_CON_EMPLEADOS\",\"message\":\"No se puede eliminar el departamento porque tiene empleados asignados: 10\"}",
-                               "status":  409
-                           },
-    "updateDepartamento":  {
-                               "body":  {
-                                            "id":  9,
-                                            "nombre":  "Dept-1773127104-UPD",
-                                            "activo":  true
-                                        },
-                               "status":  200
-                           },
-    "deleteDepartamento":  {
-                               "status":  204
-                           }
+{
+  "unassignEmpleado": {
+    "body": {
+      "clave": "E-003",
+      "nombre": "Emp-1775540232",
+      "direccion": "Dir-1775540232",
+      "telefono": "1234567890",
+      "version": 1,
+      "departamento": null
+    },
+    "status": 200
+  },
+  "updateDepartamento": {
+    "body": {
+      "id": 12,
+      "nombre": "Dept-1775540232-UPD",
+      "activo": true
+    },
+    "status": 200
+  },
+  "filterByDepartamento": {
+    "status": 200,
+    "totalElements": 1
+  },
+  "createDepartamento": {
+    "body": {
+      "id": 12,
+      "nombre": "Dept-1775540232",
+      "activo": true
+    },
+    "status": 201
+  },
+  "swaggerUi": {
+    "status": 200
+  },
+  "deleteAfterUnassign": {
+    "status": 204
+  },
+  "deleteDepartamento": {
+    "status": 204
+  },
+  "byDepartamentoEndpoint": {
+    "status": 200,
+    "totalElements": 1
+  },
+  "getDepartamento": {
+    "body": {
+      "id": 12,
+      "nombre": "Dept-1775540232",
+      "activo": true
+    },
+    "status": 200
+  },
+  "createEmpleadoAssigned": {
+    "body": {
+      "clave": "E-003",
+      "nombre": "Emp-1775540232",
+      "direccion": "Dir-1775540232",
+      "telefono": "1234567890",
+      "version": 0,
+      "departamento": {
+        "id": 13,
+        "nombre": "DeptRel-1775540232"
+      }
+    },
+    "status": 201
+  },
+  "deleteWithEmployee": {
+    "body": "",
+    "status": 409
+  }
 }

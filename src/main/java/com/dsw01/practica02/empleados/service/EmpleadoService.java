@@ -34,19 +34,20 @@ public class EmpleadoService {
         empleado.setNombre(request.nombre());
         empleado.setDireccion(request.direccion());
         empleado.setTelefono(request.telefono());
+        empleado.setActivo(true);
 
         Empleado guardado = empleadoRepository.save(empleado);
         return toResponse(guardado);
     }
 
     public EmpleadoResponse obtenerPorClave(String clave) {
-        Empleado empleado = empleadoRepository.findById(clave)
+        Empleado empleado = empleadoRepository.findByClaveAndActivoTrue(clave)
             .orElseThrow(() -> new NotFoundException("Empleado no encontrado"));
         return toResponse(empleado);
     }
 
     public EmpleadoResponse actualizarEmpleado(String clave, EmpleadoUpdateRequest request) {
-        Empleado empleado = empleadoRepository.findById(clave)
+        Empleado empleado = empleadoRepository.findByClaveAndActivoTrue(clave)
             .orElseThrow(() -> new NotFoundException("Empleado no encontrado"));
 
         if (!empleado.getVersion().equals(request.version())) {
@@ -62,13 +63,13 @@ public class EmpleadoService {
     }
 
     public void eliminarEmpleado(String clave) {
-        if (!empleadoRepository.existsById(clave)) {
-            throw new NotFoundException("Empleado no encontrado");
-        }
-        empleadoRepository.deleteById(clave);
+        Empleado empleado = empleadoRepository.findByClaveAndActivoTrue(clave)
+            .orElseThrow(() -> new NotFoundException("Empleado no encontrado"));
+        empleado.setActivo(false);
+        empleadoRepository.save(empleado);
     }
 
-    public EmpleadoPageResponse listarEmpleados(int page, int size, String nombre, String clave, String sort) {
+    public EmpleadoPageResponse listarEmpleados(int page, int size, String nombre, String clave, String sort, boolean includeInactive) {
         if (page < 0) {
             throw new IllegalArgumentException("page debe ser mayor o igual a 0");
         }
@@ -85,6 +86,10 @@ public class EmpleadoService {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, "clave"));
 
         Specification<Empleado> spec = Specification.where(null);
+
+        if (!includeInactive) {
+            spec = spec.and((root, query, cb) -> cb.isTrue(root.get("activo")));
+        }
 
         if (nombre != null && !nombre.isBlank()) {
             String nombreLike = "%" + nombre.trim().toLowerCase(Locale.ROOT) + "%";
@@ -105,7 +110,8 @@ public class EmpleadoService {
             empleado.getNombre(),
             empleado.getDireccion(),
             empleado.getTelefono(),
-            empleado.getVersion()
+            empleado.getVersion(),
+            empleado.isActivo()
         );
     }
 }

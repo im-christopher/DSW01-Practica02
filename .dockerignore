@@ -5,3 +5,11 @@ target/
 .specify/
 specs/
 verify.log
+node_modules/
+frontend/node_modules/
+frontend/.angular/
+coverage/
+*.log*
+.env*
+Dockerfile*
+.dockerignore
