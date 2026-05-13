@@ -6,6 +6,11 @@ on:
       - main
       - master
       - develop
+  workflow_run:
+    workflows:
+      - 01-CI
+    types:
+      - completed
   pull_request:
     branches:
       - main

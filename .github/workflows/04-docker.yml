@@ -1,6 +1,11 @@
 name: 04-DockerHub
 
 on:
+  workflow_run:
+    workflows:
+      - 03-Cypress
+    types:
+      - completed
   push:
     branches: [ main, develop ]
     paths:
