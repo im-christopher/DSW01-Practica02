@@ -1,4 +1,4 @@
-name: Primer Workflow CI
+name:  01-CI
 
 on:
   push:
